@@ -56,6 +56,10 @@ local function init()
                                          "Total bandwidth in bytes " ..
                                          "consumed per service/route in Kong",
                                          {"type", "service", "route"})
+  metrics.request_count = prometheus:counter("request_count",
+                                         "Total request count " ..
+                                         "consumed per service/route in Kong",
+                                         {"code", "service", "route"})
 end
 
 
@@ -81,6 +85,7 @@ local function log(message)
   end
 
   metrics.status:inc(1, { message.response.status, service_name, route_name })
+  metrics.request_count:inc(1, { message.response.status, service_name, route_name })
 
   local request_size = tonumber(message.request.size)
   if request_size and request_size > 0 then
